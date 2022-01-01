@@ -1,1 +1,1 @@
-# leetcode 周赛和双周赛记录
+# leetcode周赛和双周赛记录
