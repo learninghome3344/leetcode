@@ -1,19 +1,15 @@
 # https://leetcode-cn.com/tag/linked-list/
-from typing import Optional
+# three parts: leetcode part, 剑指offer part, and 面试题 part
+from typing import Optional, List
+import collections
+from unittest import result
+
 
 # Definition for singly-linked list.
 class ListNode:
     def __init__(self, val=0, next=None):
         self.val = val
         self.next = next
-
-
-# Definition for a Node.
-class Node:
-    def __init__(self, x: int, next: 'Node' = None, random: 'Node' = None):
-        self.val = int(x)
-        self.next = next
-        self.random = random
 
 
 # Definition for a binary tree node.
@@ -24,6 +20,11 @@ class TreeNode:
         self.right = None
 
 
+"""
+leetcode part
+"""
+
+# 2.两数相加
 class Solution:
     def addTwoNumbers(self, l1: ListNode, l2: ListNode) -> ListNode:
         if not l1:
@@ -41,6 +42,7 @@ class Solution:
         return l3
 
 
+# 19.删除链表的倒数第N个节点
 class Solution:
     def removeNthFromEnd(self, head: ListNode, n: int) -> ListNode:
         dummy = ListNode(-1, head)
@@ -55,6 +57,7 @@ class Solution:
         return dummy.next
 
 
+# 21.合并两个有序链表
 class Solution:
     def mergeTwoLists(self, l1: ListNode, l2: ListNode) -> ListNode:
         if not l1:
@@ -70,6 +73,7 @@ class Solution:
         return l3
 
 
+# 23.合并k个有序链表
 class Solution(object):
     def mergeKLists(self, lists):
         """
@@ -91,6 +95,7 @@ class Solution(object):
         return dummy.next
 
 
+# 24.两两交换链表中的节点
 class Solution:
     def swapPairs(self, head: ListNode) -> ListNode:
         if not head or not head.next:
@@ -107,6 +112,7 @@ class Solution:
         return dummy.next
 
 
+# 25.k个一组翻转链表
 class Solution:
     def reverseKGroup(self, head: ListNode, k: int) -> ListNode:
         if not head or not k:
@@ -135,6 +141,7 @@ class Solution:
         return dummy.next
 
 
+# 61.旋转链表
 class Solution:
     def rotateRight(self, head: Optional[ListNode], k: int) -> Optional[ListNode]:
         if not head or k == 0:
@@ -153,6 +160,7 @@ class Solution:
         return res
 
 
+# 82.删除排序链表中的重复元素2
 class Solution:
     def deleteDuplicates(self, head: ListNode) -> ListNode:
         if not head or not head.next:
@@ -171,6 +179,8 @@ class Solution:
             cur = cur.next
         return dummy.next
 
+
+# 83.删除排序链表中的重复元素
 class Solution:
     def deleteDuplicates(self, head: ListNode) -> ListNode:
         if not head:
@@ -183,6 +193,7 @@ class Solution:
         return head
 
 
+# 86.分隔链表
 class Solution:
     def partition(self, head: ListNode, x: int) -> ListNode:
         left_dummy, right_dummy = ListNode(-1), ListNode(-1)
@@ -201,6 +212,7 @@ class Solution:
         return left_dummy.next
 
 
+# 92.反转链表2
 class Solution:
     def reverseBetween(self, head: ListNode, m: int, n: int) -> ListNode:
         if not head or not head.next or m == n:
@@ -223,6 +235,7 @@ class Solution:
         return dummy.next
 
 
+# 109.有序链表转换二叉搜索树
 class Solution:
     def sortedListToBST(self, head: ListNode) -> TreeNode:
         if head:
@@ -240,6 +253,7 @@ class Solution:
             return root
 
 
+# 114.二叉树展开为链表
 class Solution:
     def flatten(self, root: TreeNode) -> None:
         """
@@ -261,6 +275,14 @@ class Solution:
                 stack.append(node.left)
         return
 
+
+# 138. 复制带随机指针的链表
+# Definition for a Node.
+class Node:
+    def __init__(self, x: int, next: 'Node' = None, random: 'Node' = None):
+        self.val = int(x)
+        self.next = next
+        self.random = random
 
 class Solution:
     def copyRandomList(self, head: 'Node') -> 'Node':
@@ -287,6 +309,7 @@ class Solution:
         return head2
 
 
+# 141.环形链表
 class Solution:
     def hasCycle(self, head: ListNode) -> bool:
         if not head:
@@ -300,6 +323,7 @@ class Solution:
         return False
 
 
+# 142.环形链表2
 class Solution:
     def detectCycle(self, head: ListNode) -> ListNode:
         if not head:
@@ -322,6 +346,7 @@ class Solution:
         return p1
 
 
+# 143.重排链表
 class Solution:
     def reorderList(self, head: ListNode) -> None:
         """
@@ -357,6 +382,7 @@ class Solution:
             right = tmp2
 
 
+# 146.LRU缓存
 class DoublyListNode:
     def __init__(self, key=None, val=None):
         self.key = key
@@ -403,6 +429,7 @@ class LRUCache:
             self.tail.prev = new_node
 
 
+# 147. 对链表进行插入排序
 class Solution:
     # 插入排序：每次排好一个元素，链表适合每轮找到最小值放到最左边
     def insertionSortList(self, head: ListNode) -> ListNode:
@@ -418,6 +445,7 @@ class Solution:
         return head
 
 
+# 148.排序链表
 class Solution:
     def sortList(self, head: ListNode) -> ListNode:
         # 归并排序
@@ -445,6 +473,7 @@ class Solution:
         return dummy.next
 
 
+# 160.相交链表
 class Solution:
     def getIntersectionNode(self, headA: ListNode, headB: ListNode) -> ListNode:
         if not headA or not headB:
@@ -456,6 +485,7 @@ class Solution:
         return p1
 
 
+# 203. 移除链表元素
 class Solution:
     def removeElements(self, head: ListNode, val: int) -> ListNode:
         dummy = ListNode(-1, head)
@@ -469,6 +499,7 @@ class Solution:
         return dummy.next
 
 
+# 206.反转链表
 class Solution:
     def reverseList(self, head: ListNode) -> ListNode:
         pre, p = None, head
@@ -480,6 +511,7 @@ class Solution:
         return pre
 
 
+# 234.回文链表
 class Solution:
     def isPalindrome(self, head: ListNode) -> bool:
         if not head:
@@ -506,6 +538,7 @@ class Solution:
         return True
 
 
+# 237.删除链表中的节点
 class Solution:
     def deleteNode(self, node):
         """
@@ -516,6 +549,7 @@ class Solution:
         node.next = node.next.next
 
 
+# 328.奇偶链表
 class Solution:
     def oddEvenList(self, head: ListNode) -> ListNode:
         if not head or not head.next:
@@ -532,8 +566,89 @@ class Solution:
         return head
 
 
-## 355 369 379
+# 355.设计推特
+# 关注下这个pythonic的解法 
+# https://leetcode-cn.com/problems/design-twitter/solution/wai-guo-wang-zhan-shang-de-gao-zan-pytho-l48z/
+class Twitter:
+    def __init__(self):
+        self.user_followees = collections.defaultdict(set)  # user关注列表
+        self.user_tweetlist = collections.defaultdict(list)  # user推文
+        self.timestamp = 0
 
+    def postTweet(self, userId: int, tweetId: int) -> None:
+        self.user_tweetlist[userId].append((self.timestamp, tweetId))
+        self.timestamp += 1
+
+    def getNewsFeed(self, userId: int) -> List[int]:
+        followees = self.user_followees[userId]
+        top_list = self.user_tweetlist[userId][-10:]
+        for followee in followees:
+            top_list.extend(self.user_tweetlist[followee][-10:])
+        top_list.sort(key=lambda x: x[0])
+        result = [t[1] for t in top_list[-10:]][::-1]
+        return result
+
+    def follow(self, followerId: int, followeeId: int) -> None:
+        if followeeId != followerId:
+            self.user_followees[followerId].add(followeeId)
+
+    def unfollow(self, followerId: int, followeeId: int) -> None:
+        self.user_followees[followerId].discard(followeeId)
+
+
+# 369.给单链表加1
+# [1, 2, 3] -> [1, 2, 4]
+class Solution:
+    def plusOne(self, head: ListNode) -> ListNode:
+        def reverse(head):
+            pre, p = None, head
+            while p:
+                tmp = p.next
+                p.next = pre
+                pre = p
+                p = tmp
+            return pre
+        
+        head = reverse(head)
+        carry = 1
+        p = head
+        while p:
+            cur = p.val + carry
+            p.val = cur % 10
+            carry = cur // 10
+            if carry == 0:
+                break
+            if not p.next and carry:
+                tmp = ListNode(carry)
+                p.next = tmp
+                break
+            p = p.next
+        head = reverse(head)
+        return head
+
+
+# 379. 电话目录管理系统
+class PhoneDirectory:
+    def __init__(self, maxNumbers: int):
+        self.used = set()
+        self.maxNumbers = maxNumbers
+
+    def get(self) -> int:
+        if len(self.used) == self.maxNumbers:
+            return -1
+        for n in range(self.maxNumbers):
+            if n not in self.used:
+                self.used.add(n)
+                return n
+
+    def check(self, number: int) -> bool:
+        return number not in self.used
+
+    def release(self, number: int) -> None:
+        self.used.discard(number)
+
+
+# 382.链表随机节点
 class Solution:
     def __init__(self, head: ListNode):
         """
@@ -558,8 +673,44 @@ class Solution:
         return res
 
 
-## 432
+# 426.将二叉搜索树转化为排序的双向链表
+# Definition for a Node.
+class Node:
+    def __init__(self, val, left=None, right=None):
+        self.val = val
+        self.left = left
+        self.right = right
+class Solution:
+    def treeToDoublyList(self, root: 'Optional[Node]') -> 'Optional[Node]':
+        if not root:
+            return root
+        
+        # 记录pre和cur，cur的left需要指向pre
+        stack = []
+        dummy = Node(-1)
+        pre, cur = dummy, root
+        while cur or stack:
+            if cur:
+                stack.append(cur)
+                cur = cur.left
+            else:
+                cur = stack.pop()
+                pre.right = cur
+                cur.left = pre
+                pre = cur
+                cur = cur.right
+        dummy.right.left = pre
+        pre.right = dummy.right
+        return dummy.right
 
+
+# 
+
+
+# 432.全O(1)的数据结构
+
+
+# 445.两数相加2
 class Solution:
     # 栈
     def addTwoNumbers(self, l1: ListNode, l2: ListNode) -> ListNode:
@@ -645,6 +796,133 @@ class Solution:
         res = addTwoList(l1, l2)
         res = reverseList(res)
         return res
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+"""
+剑指offer part
+"""
+
+# 剑指 Offer 06. 从尾到头打印链表
+class Solution:
+    def reversePrint(self, head: ListNode) -> List[int]:
+        p = head
+        stack = []
+        while p:
+            stack.append(p.val)
+            p = p.next
+        res = []
+        while stack:
+            res.append(stack.pop())
+        return res
+
+
+# 剑指 Offer 18. 删除链表的节点
+class Solution:
+    def deleteNode(self, head: ListNode, val: int) -> ListNode:
+        dummy = ListNode(-1, head)
+        pre, p = dummy, head
+        while p:
+            if p.val == val:
+                pre.next = p.next
+            else:
+                pre = p
+            p = p.next
+        return dummy.next
+
+
+# 剑指 Offer 22. 链表中倒数第k个节点
+class Solution:
+    def getKthFromEnd(self, head: ListNode, k: int) -> ListNode:
+        dummy = ListNode(-1, head)
+        pre, p = dummy, dummy
+        for _ in range(k):
+            p = p.next
+        while p:
+            pre = pre.next
+            p = p.next
+        return pre
+
+
+# 剑指 Offer 24. 反转链表
+class Solution:
+    def reverseList(self, head: ListNode) -> ListNode:
+        pre, p = None, head
+        while p:
+            tmp = p.next
+            p.next = pre
+            pre = p
+            p = tmp
+        return pre
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+"""
+面试题 part
+"""
+
+# 面试题 02.01. 移除重复节点
+
+
+
+
+
+
+
+
+
+
+
 
 if __name__ == '__main__':
     s = Solution()
