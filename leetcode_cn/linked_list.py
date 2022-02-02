@@ -883,10 +883,55 @@ class Solution:
             p = tmp
         return pre
 
+class Solution:
+    def mergeTwoLists(self, l1: ListNode, l2: ListNode) -> ListNode:
+        if not l1:
+            return l2
+        if not l2:
+            return l1
+        if l1.val < l2.val:
+            l3 = ListNode(l1.val)
+            l3.next = self.mergeTwoLists(l1.next, l2)
+        else:
+            l3 = ListNode(l2.val)
+            l3.next = self.mergeTwoLists(l1, l2.next)
+        return l3
 
 
+class Solution:
+    def copyRandomList(self, head: 'Node') -> 'Node':
+        if not head:
+            return None
+        
+        # a->b  =>  a->a'->b
+        p = head
+        while p:
+            tmp = Node(p.val, p.next)
+            p.next = tmp
+            p = tmp.next
+        
+        # every a' next
+        p = head
+        while p and p.next:
+            if p.random:
+                p.next.random = p.random.next
+            p = p.next.next
+        
+        # divide
+        head_copy = head.next
+        p, q = head, head_copy
+        while p and p.next:
+            p.next = q.next
+            p = p.next
+            if p:
+                q.next = p.next
+            q = q.next
+        return head_copy
 
 
+class Solution:
+    def treeToDoublyList(self, root: 'Node') -> 'Node':
+        
 
 
 
