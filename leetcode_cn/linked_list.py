@@ -704,7 +704,27 @@ class Solution:
         return dummy.right
 
 
-# 
+# 430. 扁平化多级双向链表
+class Solution:
+    def flatten(self, head: 'Node') -> 'Node':
+        cur = head
+        while cur:
+            if not cur.child:
+                cur = cur.next
+                continue
+            tmp = cur.next
+            child = cur.child
+            cur.next = child
+            cur.child = None
+            child.prev = cur
+            last = child
+            while last.next:
+                last = last.next
+            last.next = tmp
+            if tmp:
+                tmp.prev = last
+            cur = cur.next
+        return head
 
 
 # 432.全O(1)的数据结构
@@ -927,12 +947,6 @@ class Solution:
                 q.next = p.next
             q = q.next
         return head_copy
-
-
-class Solution:
-    def treeToDoublyList(self, root: 'Node') -> 'Node':
-        
-
 
 
 
