@@ -31,29 +31,45 @@ class Solution:
             return l2
         if not l2:
             return l1
-        tmp = l1.val + l2.val
-        if tmp < 10:
-            l3 = ListNode(tmp)
+        cur_val = l1.val + l2.val
+        if cur_val < 10:
+            l3 = ListNode(cur_val)
             l3.next = self.addTwoNumbers(l1.next, l2.next)
         else:
-            l3 = ListNode(tmp-10)
+            l3 = ListNode(cur_val - 10)
             carry = ListNode(1)
             l3.next = self.addTwoNumbers(self.addTwoNumbers(l1.next, carry), l2.next)
         return l3
+    
+    def addTwoNumbers2(self, l1: ListNode, l2: ListNode) -> ListNode:
+        dummy = ListNode(-1)
+        res = dummy
+        carry = None
+        while l1 or l2 or carry:
+            val1 = l1.val if l1 else 0
+            val2 = l2.val if l2 else 0
+            cval = carry.val if carry else 0
+            cur_val = val1 + val2 + cval
+            carry = None if cur_val < 10 else ListNode(1)
+            res.next = ListNode(cur_val % 10)
+            res = res.next
+            l1 = l1.next if l1 else None
+            l2 = l2.next if l2 else None
+        return dummy.next
 
 
 # 19.删除链表的倒数第N个节点
 class Solution:
     def removeNthFromEnd(self, head: ListNode, n: int) -> ListNode:
-        dummy = ListNode(-1, head)
-        p1 = head
+        dummy = ListNode(0, head)
+        fast = dummy
         for _ in range(n):
-            p1 = p1.next
-        p = dummy
-        while p1:
-            p1 = p1.next
-            p = p.next
-        p.next = p.next.next
+            fast = fast.next
+        slow = dummy
+        while fast.next:
+            fast = fast.next
+            slow = slow.next
+        slow.next = slow.next.next
         return dummy.next
 
 
@@ -903,6 +919,8 @@ class Solution:
             p = tmp
         return pre
 
+
+# 剑指 Offer 25. 合并两个排序的链表
 class Solution:
     def mergeTwoLists(self, l1: ListNode, l2: ListNode) -> ListNode:
         if not l1:
@@ -918,6 +936,7 @@ class Solution:
         return l3
 
 
+# 剑指 Offer 35. 复杂链表的复制
 class Solution:
     def copyRandomList(self, head: 'Node') -> 'Node':
         if not head:
@@ -949,8 +968,19 @@ class Solution:
         return head_copy
 
 
+# 剑指 Offer 36. 二叉搜索树与双向链表
+class Solution:
+    def treeToDoublyList(self, root: 'Node') -> 'Node':
 
 
+# 剑指 Offer 52. 两个链表的第一个公共节点
+class Solution:
+    def getIntersectionNode(self, headA: ListNode, headB: ListNode) -> ListNode:
+        pa, pb = headA, headB
+        while pa != pb:
+            pa = pa.next if pa else headB
+            pb = pb.next if pb else headA
+        return pa
 
 
 
