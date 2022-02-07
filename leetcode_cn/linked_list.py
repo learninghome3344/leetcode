@@ -109,6 +109,24 @@ class Solution(object):
             if node.next:
                 heapq.heappush(heap, (node.next.val, node.next))
         return dummy.next
+    
+    def mergeKLists2(self, lists: List[ListNode]) -> ListNode:
+        import heapq
+        heap = []
+        for i in range(len(lists)):
+            if lists[i]:
+                heapq.heappush(heap, (lists[i].val, i))
+        
+        dummy = ListNode(-1)
+        p = dummy
+        while heap:
+            _, index = heapq.heappop(heap)
+            p.next = lists[index]
+            p = p.next
+            lists[index] = lists[index].next
+            if lists[index]:
+                heapq.heappush(heap, (lists[index].val, index))
+        return dummy.next
 
 
 # 24.两两交换链表中的节点
