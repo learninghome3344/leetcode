@@ -764,6 +764,85 @@ class Solution:
 
 
 # 432.全O(1)的数据结构
+class Node:
+    def __init__(self, count):
+        self.count = count
+        self.key_set = set()
+        self.prev = None
+        self.next = None
+class AllOne:
+
+    def __init__(self):
+        self.head = Node(float("-inf"))
+        self.tail = Node(float("inf"))
+        self.head.next = self.tail
+        self.tail.prev = self.head
+
+        # 双向链表中每个节点下的key_set中所有key的计数都是count
+        self.count2node = {}
+        self.key2count = {}
+
+    def inc(self, key: str) -> None:
+        if key in self.key2count:
+            self.changeKey(key, 1)
+        else:
+            self.key2count[key] = 1
+            if self.head.next.count != 1:
+                self.addNodeAfter(Node(1), self.head)
+            self.head.next.key_set.add(key)
+            self.count2node[1] = self.head.next
+
+    def dec(self, key: str) -> None:
+        if key not in self.key2count:
+            return
+        if self.key2count[key] == 1:
+            self.key2count.pop(key)
+            self.removeFromNode(self.count2node[1], key)
+        else:
+            self.changeKey(key, -1)
+
+    def getMaxKey(self) -> str:
+        return "" if self.tail.prev == self.head else next(iter(self.tail.prev.key_set))
+
+    def getMinKey(self) -> str:
+        return "" if self.tail.prev == self.head else next(iter(self.head.next.key_set))
+
+    # key的数目+1/-1
+    def changeKey(self, key, offset) -> None:
+        # 更新self.key2count
+        cur_count = self.key2count[key]
+        self.key2count[key] += offset
+
+        # 更新链表
+        cur_node = self.count2node[cur_count]
+        new_node = self.count2node.get(cur_count + offset, None)
+        if not new_node:
+            new_node = Node(cur_count + offset)
+            self.count2node[cur_count + offset] = new_node
+            self.addNodeAfter(new_node, cur_node if offset == 1 else cur_node.prev)
+        new_node.key_set.add(key)
+        self.removeFromNode(cur_node, key)
+
+    # 在prev_node前加入new_node
+    def addNodeAfter(self, new_node, prev_node):
+        new_node.prev = prev_node
+        new_node.next = prev_node.next
+        prev_node.next.prev = new_node
+        prev_node.next = new_node
+
+    # 在cur_node删除key
+    def removeFromNode(self, cur_node, key):
+        cur_node.key_set.remove(key)
+        if not cur_node.key_set:
+            self.removeNodeFromList(cur_node)
+            self.count2node.pop(cur_node.count)
+
+    # 在链表中删除cur_node
+    def removeNodeFromList(self, cur_node):
+        cur_node.prev.next = cur_node.next
+        cur_node.next.prev = cur_node.prev
+        cur_node.next = None
+        cur_node.prev = None
 
 
 # 445.两数相加2
@@ -991,6 +1070,24 @@ class Solution:
 # 剑指 Offer 36. 二叉搜索树与双向链表
 class Solution:
     def treeToDoublyList(self, root: 'Node') -> 'Node':
+        if not root:
+            return None
+        stack = []
+        dummy = Node(-1)
+        pre, p = dummy, root
+        while p or stack:
+            if p:
+                stack.append(p)
+                p = p.left
+            else:
+                p = stack.pop()
+                pre.right = p
+                p.left = pre
+                pre = p
+                p = p.right
+        dummy.right.left = pre
+        pre.right = dummy.right
+        return dummy.right
 
 
 # 剑指 Offer 52. 两个链表的第一个公共节点
