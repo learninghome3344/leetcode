@@ -159,19 +159,21 @@ class Solution:
         loops = length // k
         dummy = ListNode(-1)
         dummy.next = head
-        pre, p = dummy, head
-        start, end = dummy, head
-        for i in range(loops):
+        pre, p = None, head
+        last_end, cur_end = dummy, head
+        for _ in range(loops):
+            pre = None
             for _ in range(k):
                 tmp = p.next
                 p.next = pre
                 pre = p
                 p = tmp
-            start.next = pre
-            end.next = p
-            # start of new loop is end of last loop
-            # end of new loop is start of new loop before reversed, that is p
-            start, end = end, p
+            # after reverse cur part, pre is cur_start, p is next_end
+            # last_end.next = cur_start
+            last_end.next = pre
+            # cur_end.next = next_end
+            cur_end.next = p
+            last_end, cur_end = cur_end, p
         return dummy.next
 
 
