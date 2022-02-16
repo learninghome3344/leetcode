@@ -1,4 +1,28 @@
+# 套路
+
+[C++ 总结了回溯问题类型 带你搞懂回溯算法(大量例题) - 子集 - 力扣（LeetCode） (leetcode-cn.com)](https://leetcode-cn.com/problems/subsets/solution/c-zong-jie-liao-hui-su-wen-ti-lei-xing-dai-ni-gao-/)
+
+[剑指 Offer 38. 字符串的排列 题解 - 力扣（LeetCode） (leetcode-cn.com)](https://leetcode-cn.com/problems/zi-fu-chuan-de-pai-lie-lcof/solution/c-zong-jie-liao-hui-su-wen-ti-lei-xing-dai-ni-ga-4/)
+
+| 类型       | 题目链接                                                     |
+| ---------- | ------------------------------------------------------------ |
+| 子集、组合 | 子集、子集 II、组合、组合总和、组合总和 II、电话号码的字母组合 |
+| 全排列     | 全排列、全排列 II、字符串的全排列、字母大小写全排列          |
+| 搜索       | 解数独、单词搜索、N皇后、分割回文串、二进制手表              |
+
+- 子集、组合类问题，关键是用一个 start 参数来控制选择列表！！最后回溯六步走：
+  ①画出递归树，找到状态变量(回溯函数的参数)，这一步非常重要※
+  ②根据题意，确立结束条件
+  ③找准选择列表(与函数参数相关),与第一步紧密关联※
+  ④判断是否需要剪枝
+  ⑤作出选择，递归调用，进入下一层
+  ⑥撤销选择
+- “排列”类型问题和“子集、组合”问题不同在于：“排列”问题使用used数组来标识选择列表，而“子集、组合”问题则使用start参数。另外还需注意两种问题的判重剪枝！！
+
+https://leetcode-cn.com/tag/backtracking/
+
 # 17.电话号码的字母组合
+
 [https://leetcode-cn.com/problems/letter-combinations-of-a-phone-number](https://leetcode-cn.com/problems/letter-combinations-of-a-phone-number) 
 ## 原题
 给定一个仅包含数字 `2-9` 的字符串，返回所有它能表示的字母组合。答案可以按 **任意顺序** 返回。
@@ -33,19 +57,37 @@
 输出：["a","b","c"]
 
 ```
- 
+
 
  **提示：** 
 -  `0 <= digits.length <= 4` 
 -  `digits[i]` 是范围 `['2', '9']` 的一个数字。
- 
+
 **标签**
 `哈希表` `字符串` `回溯` 
 
+## solution
 
-##
 ```python
+class Solution:
+    def letterCombinations(self, digits: str) -> List[str]:
+        def dfs(digits, path, start):
+            if len(digits) == len(path):
+                res.append("".join(path))
+                return
+            for i in range(start, len(digits)):
+                for a in i2a[digits[i]]:
+                    dfs(digits, path + [a], i+1)
 
+        res = []
+        if not digits:
+            return res
+        i2a = {'2': "abc", '3': "def", 
+            '4': "ghi", '5': "jkl", '6': "mno", 
+            '7': "pqrs", '8': "tuv", '9': "wxyz"}
+        
+        dfs(digits, [], 0)
+        return res
 ```
 >
 # 22.括号生成
@@ -71,18 +113,31 @@
 输出：["()"]
 
 ```
- 
+
 
  **提示：** 
 -  `1 <= n <= 8` 
- 
+
 **标签**
 `字符串` `动态规划` `回溯` 
 
+## solution
 
-##
 ```python
+class Solution:
+    def generateParenthesis(self, n: int) -> List[str]:
+        def dfs(n, left_num, right_num, path):
+            if left_num == n and right_num == n:
+                res.append("".join(path))
+                return
+            if left_num < n:
+                dfs(n, left_num + 1, right_num, path + ["("])
+            if right_num < left_num <= n:
+                dfs(n, left_num, right_num + 1, path + [")"])
 
+        res = []
+        dfs(n, 0, 0, [])
+        return res
 ```
 >
 # 37.解数独
@@ -96,7 +151,7 @@
 - 数字  `1-9`  在每一个以粗实线分隔的  `3x3`  宫内只能出现一次。（请参考示例图）
 数独部分空格内已填入了数字，空白格用  `'.'`  表示。
 
- 
+
  **示例：** 
 <img src="https://assets.leetcode-cn.com/aliyun-lc-upload/uploads/2021/04/12/250px-sudoku-by-l2g-20050714svg.png" style="height:250px; width:250px" />
 ```
@@ -108,20 +163,61 @@
 <img src=" https://assets.leetcode-cn.com/aliyun-lc-upload/uploads/2021/04/12/250px-sudoku-by-l2g-20050714_solutionsvg.png" style="height:250px; width:250px" />
 
 ```
- 
+
 
  **提示：** 
 -  `board.length == 9` 
 -  `board[i].length == 9` 
 -  `board[i][j]` 是一位数字或者 `'.'` 
 - 题目数据 **保证** 输入数独仅有一个解
- 
+
 **标签**
 `数组` `回溯` `矩阵` 
 
+## solution
 
-##
+- 一个位置可选的`num`集合为三个部分的交集，行剩余元素，列剩余元素和方块剩余元素
+- 所有需要补充的位置加入`dot_pos`中，递归调用，对第一个需要填充的位置调用`dfs`函数，函数体内判断成功时自动对下一个位置调用`dfs`函数
+- 方块的保存方式要记录下，在涉及二维数组的题目时是一种通用的方式，`i // 3 * 3 + j // 3`
+
 ```python
+class Solution:
+    def solveSudoku(self, board: List[List[str]]) -> None:
+        """
+        Do not return anything, modify board in-place instead.
+        """
+        def dfs(board, dot_pos, row, col, block, start):
+            if start == len(dot_pos):
+                return True
+            i, j = dot_pos[start]
+            cur_set = row[i] & col[j] & block[i // 3 * 3 + j // 3]
+            if not cur_set:
+                return False
+            for c in cur_set:
+                board[i][j] = c
+                row[i].remove(c)
+                col[j].remove(c)
+                block[i // 3 * 3+ j // 3].remove(c)
+                if dfs(board, dot_pos, row, col, block, start+1):
+                    return True
+                row[i].add(c)
+                col[j].add(c)
+                block[i // 3 * 3+ j // 3].add(c)
+                        
+        m, n = len(board), len(board[0])
+        row = [set([str(i) for i in range(1, 10)]) for _ in range(9)]
+        col = [set([str(i) for i in range(1, 10)]) for _ in range(9)]
+        block = [set([str(i) for i in range(1, 10)]) for _ in range(9)]
+        dot_pos = []
+        for i in range(m):
+            for j in range(n):
+                if board[i][j] == ".":
+                    dot_pos.append((i, j))
+                else:
+                    row[i].remove(board[i][j])
+                    col[j].remove(board[i][j])
+                    block[i // 3 * 3+ j // 3].remove(board[i][j])
+        dfs(board, dot_pos, row, col, block, 0)
 
 ```
 >
@@ -162,21 +258,32 @@
 输出: []
 
 ```
- 
+
 
  **提示：** 
 -  `1 <= candidates.length <= 30` 
 -  `1 <= candidates[i] <= 200` 
 -  `candidate` 中的每个元素都 **互不相同** 
 -  `1 <= target <= 500` 
- 
+
 **标签**
 `数组` `回溯` 
 
+## solution
 
-##
 ```python
+class Solution:
+    def combinationSum(self, candidates: List[int], target: int) -> List[List[int]]:
+        def dfs(candidates, target, path, sum_, start):
+            if sum_ == target:
+                res.append(path[:])
+            if sum_ < target:
+                for i in range(start, len(candidates)):
+                    dfs(candidates, target, path + [candidates[i]], sum_ + candidates[i], i)
 
+        res = []
+        dfs(candidates, target, [], 0, 0)
+        return res
 ```
 >
 # 40.组合总和 II
@@ -214,20 +321,34 @@
 [5]
 ]
 ```
- 
+
 
  **提示:** 
 -  `1 <= candidates.length <= 100` 
 -  `1 <= candidates[i] <= 50` 
 -  `1 <= target <= 30` 
- 
+
 **标签**
 `数组` `回溯` 
 
+## solution
 
-##
 ```python
-
+class Solution:
+    def combinationSum2(self, candidates: List[int], target: int) -> List[List[int]]:
+        def dfs(candidates, target, path, sum_, start):
+            if sum_ == target:
+                res.append(path[:])
+            if sum_ < target:
+                for i in range(start, len(candidates)):
+                    if i != start and candidates[i] == candidates[i-1]:
+                        continue
+                    dfs(candidates, target, path + [candidates[i]], sum_ + candidates[i], i+1)
+        
+        candidates.sort()
+        res = []
+        dfs(candidates, target, [], 0, 0)
+        return res
 ```
 >
 # 46.全排列
@@ -261,20 +382,34 @@
 输出：[[1]]
 
 ```
- 
+
 
  **提示：** 
 -  `1 <= nums.length <= 6` 
 -  `-10 <= nums[i] <= 10` 
 -  `nums` 中的所有整数 **互不相同** 
- 
+
 **标签**
 `数组` `回溯` 
 
+## solution
 
-##
 ```python
-
+class Solution:
+    def permute(self, nums: List[int]) -> List[List[int]]:
+        def dfs(nums, used, path):
+            if len(nums) == len(path):
+                res.append(path[:])
+                return
+            for i in range(len(nums)):
+                if not used[i]:
+                    used[i] = 1
+                    dfs(nums, used, path + [nums[i]])
+                    used[i] = 0
+        
+        res = []
+        dfs(nums, [0] * len(nums), [])
+        return res
 ```
 >
 # 47.全排列 II
@@ -303,19 +438,36 @@
 输出：[[1,2,3],[1,3,2],[2,1,3],[2,3,1],[3,1,2],[3,2,1]]
 
 ```
- 
+
 
  **提示：** 
 -  `1 <= nums.length <= 8` 
 -  `-10 <= nums[i] <= 10` 
- 
+
 **标签**
 `数组` `回溯` 
 
+## solution
 
-##
 ```python
-
+class Solution:
+    def permuteUnique(self, nums: List[int]) -> List[List[int]]:
+        def dfs(nums, used, path):
+            if len(nums) == len(path):
+                res.append(path[:])
+                return
+            for i in range(len(nums)):
+                if not used[i]:
+                    if i > 0 and nums[i] == nums[i-1] and not used[i-1]:
+                        continue
+                    used[i] = 1
+                    dfs(nums, used, path + [nums[i]])
+                    used[i] = 0
+        
+        nums.sort()
+        res = []
+        dfs(nums, [0] * len(nums), [])
+        return res
 ```
 >
 # 51.N 皇后
@@ -345,11 +497,11 @@
 输出：[["Q"]]
 
 ```
- 
+
 
  **提示：** 
 -  `1 <= n <= 9` 
- 
+
 **标签**
 `数组` `回溯` 
 
@@ -366,7 +518,7 @@
 
 给你一个整数 `n` ，返回 **n 皇后问题** 不同的解决方案的数量。
 
- 
+
  **示例 1：** 
 <img alt="" src="https://assets.leetcode.com/uploads/2020/11/13/queens.jpg" style="width: 600px; height: 268px;" />
 ```
@@ -384,11 +536,11 @@
 输出：1
 
 ```
- 
+
 
  **提示：** 
 -  `1 <= n <= 9` 
- 
+
 **标签**
 `回溯` 
 
@@ -429,19 +581,29 @@
 输入：n = 1, k = 1
 输出：[[1]]
 ```
- 
+
 
  **提示：** 
 -  `1 <= n <= 20` 
 -  `1 <= k <= n` 
- 
+
 **标签**
 `数组` `回溯` 
 
+## solution
 
-##
 ```python
-
+class Solution:
+    def combine(self, n: int, k: int) -> List[List[int]]:
+        def dfs(n, k, path, start):
+            if len(path) == k:
+                res.append(path[:])
+            for i in range(start, n+1):
+                dfs(n, k, path + [i], i+1)
+        
+        res = []
+        dfs(n, k, [], 1)
+        return res
 ```
 >
 # 78.子集
@@ -469,20 +631,30 @@
 输出：[[],[0]]
 
 ```
- 
+
 
  **提示：** 
 -  `1 <= nums.length <= 10` 
 -  `-10 <= nums[i] <= 10` 
 -  `nums` 中的所有元素 **互不相同** 
- 
+
 **标签**
 `位运算` `数组` `回溯` 
 
+## solution
 
-##
 ```python
-
+class Solution:
+    def subsets(self, nums: List[int]) -> List[List[int]]:
+        def dfs(nums, path, start):
+            res.append(path[:])
+            for i in range(start, len(nums)):
+                path.append(nums[i])
+                dfs(nums, path, i+1)
+                path.pop()
+        res = []
+        dfs(nums, [], 0)
+        return res
 ```
 >
 # 79.单词搜索
@@ -518,7 +690,7 @@
 输出：false
 
 ```
- 
+
 
  **提示：** 
 -  `m == board.length` 
@@ -526,11 +698,11 @@
 -  `1 <= m, n <= 6` 
 -  `1 <= word.length <= 15` 
 -  `board` 和 `word` 仅由大小写英文字母组成
- 
+
 
  **进阶：** 你可以使用搜索剪枝的技术来优化解决方案，使其在 `board` 更大的情况下可以更快解决问题？
 
- 
+
 **标签**
 `数组` `回溯` `矩阵` 
 
@@ -581,11 +753,11 @@
 输出：[0,1]
 
 ```
- 
+
 
  **提示：** 
 -  `1 <= n <= 16` 
- 
+
 **标签**
 `位运算` `数学` `回溯` 
 
@@ -601,7 +773,7 @@
 给你一个整数数组 `nums` ，其中可能包含重复元素，请你返回该数组所有可能的子集（幂集）。
 
 解集 **不能** 包含重复的子集。返回的解集中，子集可以按 **任意顺序** 排列。
- 
+
 
  **示例 1：** 
 
@@ -619,19 +791,33 @@
 输出：[[],[0]]
 
 ```
- 
+
 
  **提示：** 
 -  `1 <= nums.length <= 10` 
 -  `-10 <= nums[i] <= 10` 
- 
+
 **标签**
 `位运算` `数组` `回溯` 
 
+## solution
 
-##
 ```python
-
+class Solution:
+    def subsetsWithDup(self, nums: List[int]) -> List[List[int]]:
+        def dfs(nums, path, start):
+            res.append(path[:])
+            for i in range(start, len(nums)):
+                if i > start and nums[i] == nums[i-1]:
+                    continue
+                path.append(nums[i])
+                dfs(nums, path, i+1)
+                path.pop()
+        
+        nums.sort()
+        res = []
+        dfs(nums, [], 0)
+        return res
 ```
 >
 # 93.复原 IP 地址
@@ -667,12 +853,12 @@
 输出：["1.0.10.23","1.0.102.3","10.1.0.23","10.10.2.3","101.0.2.3"]
 
 ```
- 
+
 
  **提示：** 
 -  `0 <= s.length <= 20` 
 -  `s` 仅由数字组成
- 
+
 **标签**
 `字符串` `回溯` 
 
@@ -687,7 +873,7 @@
 ## 原题
 给你一个整数 `n` ，请你生成并返回所有由 `n` 个节点组成且节点值从 `1` 到 `n` 互不相同的不同 **二叉搜索树** 。可以按 **任意顺序** 返回答案。
 
- 
+
  **示例 1：** 
 <img alt="" src="https://assets.leetcode.com/uploads/2021/01/18/uniquebstn3.jpg" style="width: 600px; height: 148px;" />
 ```
@@ -704,11 +890,11 @@
 输出：[[1]]
 
 ```
- 
+
 
  **提示：** 
 -  `1 <= n <= 8` 
- 
+
 **标签**
 `树` `二叉搜索树` `动态规划` `回溯` `二叉树` 
 
@@ -724,7 +910,7 @@
 给你二叉树的根节点 `root` 和一个整数目标和 `targetSum` ，找出所有 **从根节点到叶子节点** 路径总和等于给定目标和的路径。
 
  **叶子节点** 是指没有子节点的节点。
- 
+
 
  **示例 1：** 
 <img alt="" src="https://assets.leetcode.com/uploads/2021/01/18/pathsumii1.jpg" style="width: 500px; height: 356px;" />
@@ -750,13 +936,13 @@
 输出：[]
 
 ```
- 
+
 
  **提示：** 
 - 树中节点总数在范围 `[0, 5000]` 内
 -  `-1000 <= Node.val <= 1000` 
 -  `-1000 <= targetSum <= 1000` 
- 
+
 **标签**
 `树` `深度优先搜索` `回溯` `二叉树` 
 
@@ -797,7 +983,7 @@
 解释：endWord "cog" 不在字典 wordList 中，所以不存在符合要求的转换序列。
 
 ```
- 
+
 
  **提示：** 
 -  `1 <= beginWord.length <= 5` 
@@ -807,7 +993,7 @@
 -  `beginWord` 、 `endWord` 和 `wordList[i]` 由小写英文字母组成
 -  `beginWord != endWord` 
 -  `wordList` 中的所有单词 **互不相同** 
- 
+
 **标签**
 `广度优先搜索` `哈希表` `字符串` `回溯` 
 
@@ -842,12 +1028,12 @@
 输出：[["a"]]
 
 ```
- 
+
 
  **提示：** 
 -  `1 <= s.length <= 16` 
 -  `s` 仅由小写英文字母组成
- 
+
 **标签**
 `字符串` `动态规划` `回溯` 
 
@@ -891,7 +1077,7 @@
 输出:[]
 
 ```
- 
+
 
  **提示：** 
 
@@ -901,7 +1087,7 @@
 -  `1 <= wordDict[i].length <= 10` 
 -  `s` 和 `wordDict[i]` 仅有小写英文字母组成
 -  `wordDict` 中所有字符串都 **不同** 
- 
+
 **标签**
 `字典树` `记忆化搜索` `哈希表` `字符串` `动态规划` `回溯` 
 
@@ -936,7 +1122,7 @@
 输出：[]
 
 ```
- 
+
 
  **提示：** 
 -  `m == board.length` 
@@ -947,7 +1133,7 @@
 -  `1 <= words[i].length <= 10` 
 -  `words[i]` 由小写英文字母组成
 -  `words` 中的所有字符串互不相同
- 
+
 **标签**
 `字典树` `数组` `字符串` `回溯` `矩阵` 
 
@@ -979,13 +1165,26 @@
 输出: [[1,2,6], [1,3,5], [2,3,4]]
 
 ```
- 
+
 **标签**
 `数组` `回溯` 
 
+## solution
 
-##
 ```python
+class Solution:
+    def combinationSum3(self, k: int, n: int) -> List[List[int]]:
+        def dfs(nums, k, n, path, sum_, start):
+            if len(path) == k and sum_ == n:
+                res.append(path[:])
+            if sum_ < n and len(path) < k:
+                for i in range(start, len(nums)):
+                    dfs(nums, k, n, path + [nums[i]], sum_ + nums[i], i+1)
+
+        res = []
+        nums = list(range(1, 10))
+        dfs(nums, k, n, [], 0, 0)
+        return res
 
 ```
 >
@@ -993,7 +1192,7 @@
 [https://leetcode-cn.com/problems/factor-combinations](https://leetcode-cn.com/problems/factor-combinations) 
 ## 原题
 
- 
+
 **标签**
 `数组` `回溯` 
 
@@ -1009,7 +1208,7 @@
 给你一个二叉树的根节点 `root` ，按 **任意顺序** ，返回所有从根节点到叶子节点的路径。
 
  **叶子节点** 是指没有子节点的节点。
- 
+
 
  **示例 1：** 
 <img alt="" src="https://assets.leetcode.com/uploads/2021/03/12/paths-tree.jpg" style="width: 207px; height: 293px;" />
@@ -1027,12 +1226,12 @@
 输出：["1"]
 
 ```
- 
+
 
  **提示：** 
 - 树中节点的数目在范围 `[1, 100]` 内
 -  `-100 <= Node.val <= 100` 
- 
+
 **标签**
 `树` `深度优先搜索` `字符串` `回溯` `二叉树` 
 
@@ -1046,7 +1245,7 @@
 [https://leetcode-cn.com/problems/palindrome-permutation-ii](https://leetcode-cn.com/problems/palindrome-permutation-ii) 
 ## 原题
 
- 
+
 **标签**
 `哈希表` `字符串` `回溯` 
 
@@ -1100,13 +1299,13 @@
 输入: num = "3456237490", target = 9191
 输出: []
 ```
- 
+
 
  **提示：** 
 -  `1 <= num.length <= 10` 
 -  `num` 仅含数字
 -  `-2^31 <= target <= 2^31 - 1` 
- 
+
 **标签**
 `数学` `字符串` `回溯` 
 
@@ -1120,7 +1319,7 @@
 [https://leetcode-cn.com/problems/word-pattern-ii](https://leetcode-cn.com/problems/word-pattern-ii) 
 ## 原题
 
- 
+
 **标签**
 `哈希表` `字符串` `回溯` 
 
@@ -1134,7 +1333,7 @@
 [https://leetcode-cn.com/problems/flip-game-ii](https://leetcode-cn.com/problems/flip-game-ii) 
 ## 原题
 
- 
+
 **标签**
 `记忆化搜索` `数学` `动态规划` `回溯` `博弈` 
 
@@ -1177,13 +1376,13 @@
 输出：[""]
 
 ```
- 
+
 
  **提示：** 
 -  `1 <= s.length <= 25` 
 -  `s` 由小写英文字母以及括号 `'('` 和 `')'` 组成
 -  `s` 中至多含 `20` 个括号
- 
+
 **标签**
 `广度优先搜索` `字符串` `回溯` 
 
@@ -1223,16 +1422,16 @@
 输出：true 
 解释：累加序列为: 1, 99, 100, 199。1 + 99 = 100, 99 + 100 = 199
 ```
- 
+
 
  **提示：** 
 -  `1 <= num.length <= 35` 
 -  `num` 仅由数字（ `0` - `9` ）组成
- 
+
 
  **进阶：** 你计划如何处理由过大的整数输入导致的溢出?
 
- 
+
 **标签**
 `字符串` `回溯` 
 
@@ -1246,7 +1445,7 @@
 [https://leetcode-cn.com/problems/generalized-abbreviation](https://leetcode-cn.com/problems/generalized-abbreviation) 
 ## 原题
 
- 
+
 **标签**
 `位运算` `字符串` `回溯` 
 
@@ -1260,7 +1459,7 @@
 [https://leetcode-cn.com/problems/android-unlock-patterns](https://leetcode-cn.com/problems/android-unlock-patterns) 
 ## 原题
 
- 
+
 **标签**
 `动态规划` `回溯` 
 
@@ -1283,7 +1482,7 @@
 解释: 答案应为除去 11,22,33,44,55,66,77,88,99 外，在 [0,100) 区间内的所有数字。
 
 ```
- 
+
 **标签**
 `数学` `动态规划` `回溯` 
 
@@ -1308,7 +1507,7 @@
 - 例如， `"01:00"` 是无效的时间，正确的写法应该是 `"1:00"` 。
 分钟必须由两位数组成，可能会以零开头：
 - 例如， `"10:2"` 是无效的时间，正确的写法应该是 `"10:02"` 。
- 
+
 
  **示例 1：** 
 
@@ -1326,11 +1525,11 @@
 输出：[]
 
 ```
- 
+
 
  **提示：** 
 -  `0 <= turnedOn <= 10` 
- 
+
 **标签**
 `位运算` `回溯` 
 
@@ -1344,7 +1543,7 @@
 [https://leetcode-cn.com/problems/minimum-unique-word-abbreviation](https://leetcode-cn.com/problems/minimum-unique-word-abbreviation) 
 ## 原题
 
- 
+
 **标签**
 `位运算` `字符串` `回溯` 
 
@@ -1358,7 +1557,7 @@
 [https://leetcode-cn.com/problems/word-squares](https://leetcode-cn.com/problems/word-squares) 
 ## 原题
 
- 
+
 **标签**
 `字典树` `数组` `字符串` `回溯` 
 
@@ -1372,7 +1571,7 @@
 [https://leetcode-cn.com/problems/optimal-account-balancing](https://leetcode-cn.com/problems/optimal-account-balancing) 
 ## 原题
 
- 
+
 **标签**
 `数组` `回溯` 
 
@@ -1411,12 +1610,12 @@
 解释: 不能用所有火柴拼成一个正方形。
 
 ```
- 
+
 
  **提示:** 
 -  `1 <= matchsticks.length <= 15` 
 -  `1 <= matchsticks[i] <= 10^8` 
- 
+
 **标签**
 `位运算` `数组` `动态规划` `回溯` `状态压缩` 
 
@@ -1430,7 +1629,7 @@
 [https://leetcode-cn.com/problems/robot-room-cleaner](https://leetcode-cn.com/problems/robot-room-cleaner) 
 ## 原题
 
- 
+
 **标签**
 `回溯` `交互` 
 
@@ -1465,12 +1664,12 @@
 输出：[[4,4]]
 
 ```
- 
+
 
  **提示：** 
 -  `1 <= nums.length <= 15` 
 -  `-100 <= nums[i] <= 100` 
- 
+
 **标签**
 `位运算` `数组` `哈希表` `回溯` 
 
@@ -1513,14 +1712,14 @@
 输出：1
 
 ```
- 
+
 
  **提示：** 
 -  `1 <= nums.length <= 20` 
 -  `0 <= nums[i] <= 1000` 
 -  `0 <= sum(nums[i]) <= 1000` 
 -  `-1000 <= target <= 1000` 
- 
+
 **标签**
 `数组` `动态规划` `回溯` 
 
@@ -1563,11 +1762,11 @@
 输出：1
 
 ```
- 
+
 
  **提示：** 
 -  `1 <= n <= 15` 
- 
+
 **标签**
 `位运算` `数组` `动态规划` `回溯` `状态压缩` 
 
@@ -1612,7 +1811,7 @@
 需要买 1A ，2B 和 1C ，所以付 ¥4 买 1A 和 1B（大礼包 1），以及 ¥3 购买 1B ， ¥4 购买 1C 。 
 不可以购买超出待购清单的物品，尽管购买大礼包 2 更加便宜。
 ```
- 
+
 
  **提示：** 
 -  `n == price.length` 
@@ -1623,7 +1822,7 @@
 -  `1 <= special.length <= 100` 
 -  `special[i].length == n + 1` 
 -  `0 <= special[i][j] <= 50` 
- 
+
 **标签**
 `位运算` `记忆化搜索` `数组` `动态规划` `回溯` `状态压缩` 
 
@@ -1641,20 +1840,18 @@
 你须遵守以下规则:
 - 除法运算符 `'/'` 表示实数除法，而不是整数除法。
 
-	
 - 例如， `4 /(1 - 2 / 3)= 4 /(1 / 3)= 12` 。
-	
 	
 - 每个运算都在两个数字之间。特别是，不能使用 `“-”` 作为一元运算符。
 	
 - 例如，如果 `cards =[1,1,1,1]` ，则表达式 `“-1 -1 -1 -1”` 是 **不允许** 的。
-	
 	
 - 你不能把数字串在一起
 	
 - 例如，如果 `cards =[1,2,1,2]` ，则表达式 `“12 + 12”` 无效。
 	
 	
+
 如果可以得到这样的表达式，其计算结果为 `24` ，则返回 `true` ，否则返回 `false` 。
 
  
@@ -1676,12 +1873,12 @@
 输出: false
 
 ```
- 
+
 
  **提示:** 
 -  `cards.length == 4` 
 -  `1 <= cards[i] <= 9` 
- 
+
 **标签**
 `数组` `数学` `回溯` 
 
@@ -1724,7 +1921,7 @@
 输出：-1
 解释：我们不能通过剪切给定贴纸的字母来形成目标“basicbasic”。
 ```
- 
+
 
  **提示:** 
 -  `n == stickers.length` 
@@ -1732,7 +1929,7 @@
 -  `1 <= stickers[i].length <= 10` 
 -  `1 <= target <= 15` 
 -  `stickers[i]` 和 `target` 由小写英文单词组成
- 
+
 **标签**
 `位运算` `动态规划` `回溯` `状态压缩` 
 
@@ -1754,12 +1951,12 @@
 输出： True
 说明： 有可能将其分成 4 个子集（5），（1,4），（2,3），（2,3）等于总和。
 ```
- 
+
 
  **提示：** 
 -  `1 <= k <= len(nums) <= 16` 
 -  `0 < nums[i] < 10000` 
- 
+
 **标签**
 `位运算` `记忆化搜索` `数组` `动态规划` `回溯` `状态压缩` 
 
@@ -1788,12 +1985,12 @@
 输出：["12345"]
 
 ```
- 
+
 
  **提示：** 
 -  `S` 的长度不超过 `12` 。
 -  `S` 仅由数字和字母组成。
- 
+
 **标签**
 `位运算` `字符串` `回溯` 
 
@@ -1833,7 +2030,7 @@
 输出：[[0,4],[0,3,4],[0,1,3,4],[0,1,2,3,4],[0,1,4]]
 
 ```
- 
+
 
  **提示：** 
 -  `n == graph.length` 
@@ -1842,9 +2039,9 @@
 -  `graph[i][j] != i` （即不存在自环）
 -  `graph[i]` 中的所有元素 **互不相同** 
 - 保证输入为 **有向无环图（DAG）** 
- 
 
- 
+
+
 **标签**
 `深度优先搜索` `广度优先搜索` `图` `回溯` 
 
@@ -1897,14 +2094,14 @@
 1.0 是不被允许的。
 
 ```
- 
+
 
  **提示:** 
 -  `4 <= S.length <= 12` .
 -  `S[0]` = "(", `S[S.length - 1]` = ")", 且字符串 `S` 中的其他元素都是数字。
- 
 
- 
+
+
 **标签**
 `字符串` `回溯` 
 
@@ -1955,12 +2152,12 @@
 解释：每个块的数字不能以零开头，因此 "01"，"2"，"3" 不是有效答案。
 
 ```
- 
+
 
  **提示：** 
 -  `1 <= num.length <= 200` 
 -  `num` 中只含有数字
- 
+
 **标签**
 `字符串` `回溯` 
 
@@ -2013,12 +2210,12 @@
 输出：[13,20,24,31,35,42,46,53,57,64,68,75,79,86,97]
 
 ```
- 
+
 
  **提示：** 
 -  `2 <= n <= 9` 
 -  `0 <= k <= 9` 
- 
+
 **标签**
 `广度优先搜索` `回溯` 
 
@@ -2072,11 +2269,11 @@
 请注意，起始和结束方格可以位于网格中的任意位置。
 
 ```
- 
+
 
  **提示：** 
 -  `1 <= grid.length * grid[0].length <= 20` 
- 
+
 **标签**
 `位运算` `数组` `回溯` `矩阵` 
 
@@ -2111,12 +2308,12 @@
 输出：1
 
 ```
- 
+
 
  **提示：** 
 -  `1 <= A.length <= 12` 
 -  `0 <= A[i] <= 1e9` 
- 
+
 **标签**
 `位运算` `数组` `数学` `动态规划` `回溯` `状态压缩` 
 
@@ -2130,7 +2327,7 @@
 [https://leetcode-cn.com/problems/campus-bikes-ii](https://leetcode-cn.com/problems/campus-bikes-ii) 
 ## 原题
 
- 
+
 **标签**
 `位运算` `数组` `动态规划` `回溯` `状态压缩` 
 
@@ -2173,12 +2370,12 @@
 输入："V"
 输出：1
 ```
- 
+
 
  **提示：** 
 -  `1 <= tiles.length <= 7` 
 -  `tiles` 由大写英文字母组成
- 
+
 **标签**
 `字符串` `回溯` 
 
@@ -2192,7 +2389,7 @@
 [https://leetcode-cn.com/problems/brace-expansion](https://leetcode-cn.com/problems/brace-expansion) 
 ## 原题
 
- 
+
 **标签**
 `广度优先搜索` `字符串` `回溯` 
 
@@ -2206,7 +2403,7 @@
 [https://leetcode-cn.com/problems/confusing-number-ii](https://leetcode-cn.com/problems/confusing-number-ii) 
 ## 原题
 
- 
+
 **标签**
 `数学` `回溯` 
 
@@ -2224,21 +2421,17 @@
 花括号展开的表达式可以看作一个由 **花括号** 、 **逗号** 和 **小写英文字母** 组成的字符串，定义下面几条语法规则：
 - 如果只给出单一的元素 `x` ，那么表达式表示的字符串就只有 `"x"` 。 `R(x) = {x}` 
 
-	
 - 例如，表达式 `"a"` 表示字符串 `"a"` 。
 - 而表达式 `"w"` 就表示字符串 `"w"` 。
-	
 	
 - 当两个或多个表达式并列，以逗号分隔，我们取这些表达式中元素的并集。 `R({e_1,e_2,...}) = R(e_1) ∪ R(e_2) ∪ ...` 
 	
 - 例如，表达式 `"{a,b,c}"` 表示字符串 `"a","b","c"` 。
 - 而表达式 `"{{a,b},{b,c}}"` 也可以表示字符串 `"a","b","c"` 。
 	
-	
 - 要是两个或多个表达式相接，中间没有隔开时，我们从这些表达式中各取一个元素依次连接形成字符串。 `R(e_1 + e_2) = {a + b for (a, b) in R(e_1) × R(e_2)}` 
 	
 - 例如，表达式 `"{a,b}{c,d}"` 表示字符串 `"ac","ad","bc","bd"` 。
-	
 	
 - 表达式之间允许嵌套，单一元素与表达式的连接也是允许的。
 	
@@ -2246,6 +2439,7 @@
 - 例如，表达式 `"a{b,c}{d,e}f{g,h}"` 可以表示字符串 `"abdfg", "abdfh", "abefg", "abefh", "acdfg", "acdfh", "acefg", "acefh"` 。
 	
 	
+
 给出表示基于给定语法规则的表达式 `expression` ，返回它所表示的所有字符串组成的有序列表。
 
 假如你希望以「集合」的概念了解此题，也可以通过点击 “ **显示英文描述** ” 获取详情。
@@ -2268,13 +2462,13 @@
 解释：输出中 不应 出现重复的组合结果。
 
 ```
- 
+
 
  **提示：** 
 -  `1 <= expression.length <= 60` 
 -  `expression[i]` 由 `'{'` ， `'}'` ， `','` 或小写英文字母组成
 - 给出的表达式 `expression` 用以表示一组基于题目描述中语法构造的字符串
- 
+
 **标签**
 `栈` `广度优先搜索` `字符串` `回溯` 
 
@@ -2288,7 +2482,7 @@
 [https://leetcode-cn.com/problems/stepping-numbers](https://leetcode-cn.com/problems/stepping-numbers) 
 ## 原题
 
- 
+
 **标签**
 `广度优先搜索` `回溯` 
 
@@ -2309,7 +2503,7 @@
 - 每个单元格只能被开采（进入）一次。
 -  **不得开采** （进入）黄金数目为 `0` 的单元格。
 - 矿工可以从网格中 **任意一个** 有黄金的单元格出发或者是停止。
- 
+
 
  **示例 1：** 
 
@@ -2337,13 +2531,13 @@
 一种收集最多黄金的路线是：1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7。
 
 ```
- 
+
 
  **提示：** 
 -  `1 <= grid.length, grid[i].length <= 15` 
 -  `0 <= grid[i][j] <= 100` 
 - 最多 **25** 个单元格中有黄金。
- 
+
 **标签**
 `数组` `回溯` `矩阵` 
 
@@ -2360,7 +2554,7 @@
 -  `p[0] = start` 
 -  `p[i]` 和 `p[i+1]` 的二进制表示形式只有一位不同
 -  `p[0]` 和 `p[2^n -1]` 的二进制表示形式也只有一位不同
- 
+
 
  **示例 1：** 
 
@@ -2379,12 +2573,12 @@
 解释：这个排列的二进制表示是 (010,110,111,101,100,000,001,011)
 
 ```
- 
+
 
  **提示：** 
 -  `1 <= n <= 16` 
 -  `0 <= start < 2^n` 
- 
+
 **标签**
 `位运算` `数学` `回溯` 
 
@@ -2426,13 +2620,13 @@
 输出：26
 
 ```
- 
+
 
  **提示：** 
 -  `1 <= arr.length <= 16` 
 -  `1 <= arr[i].length <= 26` 
 -  `arr[i]` 中只含有小写英文字母
- 
+
 **标签**
 `位运算` `数组` `字符串` `回溯` 
 
@@ -2484,12 +2678,12 @@
 输出：6
 
 ```
- 
+
 
  **提示：** 
 -  `1 <= n <= 13` 
 -  `1 <= m <= 13` 
- 
+
 **标签**
 `动态规划` `回溯` 
 
@@ -2512,7 +2706,7 @@
 - 单词表 `words` 中每个单词只能计分（使用）一次。
 - 根据字母得分情况表 `score` ，字母 `';a';` , `';b';` , `';c';` , ... , `';z';` 对应的得分分别为 `score[0]` , `score[1]` , ..., `score[25]` 。
 - 本场游戏的「得分」是指：玩家所拼写出的单词集合里包含的所有字母的得分之和。
- 
+
 
  **示例 1：** 
 
@@ -2542,7 +2736,7 @@
 解释：
 字母 "e" 在字母表 letters 中只出现了一次，所以无法组成单词表 words 中的单词。
 ```
- 
+
 
  **提示：** 
 -  `1 <= words.length <= 14` 
@@ -2552,7 +2746,7 @@
 -  `score.length == 26` 
 -  `0 <= score[i] <= 10` 
 -  `words[i]` 和 `letters[i]` 只包含小写的英文字母。
- 
+
 **标签**
 `位运算` `数组` `字符串` `动态规划` `回溯` `状态压缩` 
 
@@ -2566,7 +2760,7 @@
 [https://leetcode-cn.com/problems/synonymous-sentences](https://leetcode-cn.com/problems/synonymous-sentences) 
 ## 原题
 
- 
+
 **标签**
 `并查集` `数组` `哈希表` `字符串` `回溯` 
 
@@ -2583,7 +2777,7 @@
 - 一个构造函数，输入参数包括：一个 **有序且字符唯一** 的字符串 `characters` （该字符串只包含小写英文字母）和一个数字 `combinationLength` 。
 - 函数 *next()* ，按 **字典序** 返回长度为 `combinationLength` 的下一个字母组合。
 - 函数 *hasNext()* ，只有存在长度为 `combinationLength` 的下一个字母组合时，才返回 `True` ；否则，返回 `False` 。
- 
+
 
  **示例：** 
 
@@ -2598,13 +2792,13 @@ iterator.next(); // 返回 "bc"
 iterator.hasNext(); // 返回 false
 
 ```
- 
+
 
  **提示：** 
 -  `1 <= combinationLength <= characters.length <= 15` 
 - 每组测试数据最多包含 `10^4` 次函数调用。
 - 题目保证每次调用函数 `next` 时都存在下一个字母组合。
- 
+
 **标签**
 `设计` `字符串` `回溯` `迭代器` 
 
@@ -2658,14 +2852,14 @@ iterator.hasNext(); // 返回 false
 输出：false
 
 ```
- 
+
 
  **提示：** 
 -  `2 <= words.length <= 5` 
 -  `1 <= words[i].length, results.length <= 7` 
 -  `words[i], result` 只含有大写英文字母
 - 表达式中使用的不同字符数最大为 10
- 
+
 **标签**
 `数组` `数学` `字符串` `回溯` 
 
@@ -2727,14 +2921,14 @@ iterator.hasNext(); // 返回 false
 输出："abacbabacb"
 
 ```
- 
+
 
  **提示：** 
 -  `1 <= n <= 10` 
 -  `1 <= k <= 100` 
- 
 
- 
+
+
 **标签**
 `字符串` `回溯` 
 
@@ -2806,14 +3000,14 @@ iterator.hasNext(); // 返回 false
 输出：0.90327
 
 ```
- 
+
 
  **提示：** 
 -  `1 <= balls.length <= 8` 
 -  `1 <= balls[i] <= 6` 
 -  `sum(balls)` 是偶数
 - 答案与真实值误差在 `10^-5` 以内，则被视为正确答案
- 
+
 **标签**
 `数学` `动态规划` `回溯` `组合数学` `概率与统计` 
 
@@ -2858,7 +3052,7 @@ iterator.hasNext(); // 返回 false
 解释：无法进一步拆分字符串。
 
 ```
- 
+
 
  **提示：** 
 - 
@@ -2867,7 +3061,7 @@ iterator.hasNext(); // 返回 false
 - 
 	 `s` 仅包含小写英文字母
 	
- 
+
 **标签**
 `哈希表` `字符串` `回溯` 
 
@@ -2927,14 +3121,14 @@ iterator.hasNext(); // 返回 false
 输出：4
 
 ```
- 
+
 
  **提示：** 
 -  `1 <= n <= 20` 
 -  `1 <= requests.length <= 16` 
 -  `requests[i].length == 2` 
 -  `0 <= from<sub>i</sub>, to<sub>i</sub> < n` 
- 
+
 **标签**
 `位运算` `数组` `回溯` `枚举` 
 
@@ -2994,7 +3188,7 @@ iterator.hasNext(); // 返回 false
 解释：第 0 位顾客得到 [1,1] ，第 1 位顾客得到 [1,1,1] 。
 
 ```
- 
+
 
  **提示：** 
 -  `n == nums.length` 
@@ -3004,7 +3198,7 @@ iterator.hasNext(); // 返回 false
 -  `1 <= m <= 10` 
 -  `1 <= quantity[i] <= 10^5` 
 -  `nums`  中至多有  `50`  个不同的数字。
- 
+
 **标签**
 `位运算` `数组` `动态规划` `回溯` `状态压缩` 
 
@@ -3044,11 +3238,11 @@ iterator.hasNext(); // 返回 false
 输出：[5,3,1,4,3,5,2,4,2]
 
 ```
- 
+
 
  **提示：** 
 -  `1 <= n <= 20` 
- 
+
 **标签**
 `数组` `回溯` 
 
@@ -3089,12 +3283,12 @@ iterator.hasNext(); // 返回 false
 2 号工人：4、7（工作时间 = 4 + 7 = 11）
 最大工作时间是 11 。
 ```
- 
+
 
  **提示：** 
 -  `1 <= k <= jobs.length <= 12` 
 -  `1 <= jobs[i] <= 10^7` 
- 
+
 **标签**
 `位运算` `数组` `动态规划` `回溯` `状态压缩` 
 
@@ -3165,7 +3359,7 @@ iterator.hasNext(); // 返回 false
 输出：10
 解释：注意，你可以选择不添加任何配料，但你必须选择一种基料。
 ```
- 
+
 
  **提示：** 
 -  `n == baseCosts.length` 
@@ -3173,7 +3367,7 @@ iterator.hasNext(); // 返回 false
 -  `1 <= n, m <= 10` 
 -  `1 <= baseCosts[i], toppingCosts[i] <= 10^4` 
 -  `1 <= target <= 10^4` 
- 
+
 **标签**
 `数组` `动态规划` `回溯` 
 
@@ -3225,13 +3419,13 @@ iterator.hasNext(); // 返回 false
 (1 * gcd(1, 5)) + (2 * gcd(2, 4)) + (3 * gcd(3, 6)) = 1 + 4 + 9 = 14
 
 ```
- 
+
 
  **提示：** 
 -  `1 <= n <= 7` 
 -  `nums.length == 2 * n` 
 -  `1 <= nums[i] <= 10^6` 
- 
+
 **标签**
 `位运算` `数组` `数学` `动态规划` `回溯` `状态压缩` `数论` 
 
@@ -3245,7 +3439,7 @@ iterator.hasNext(); // 返回 false
 [https://leetcode-cn.com/problems/maximum-number-of-accepted-invitations](https://leetcode-cn.com/problems/maximum-number-of-accepted-invitations) 
 ## 原题
 
- 
+
 **标签**
 `数组` `回溯` `矩阵` 
 
@@ -3306,12 +3500,12 @@ iterator.hasNext(); // 返回 false
 解释：s 可以拆分为 ["100", "099", "98"] ，对应数值为 [100,99,98] 。
 满足按降序排列，且相邻值相差 1 。
 ```
- 
+
 
  **提示：** 
 -  `1 <= s.length <= 20` 
 -  `s` 仅由数字组成
- 
+
 **标签**
 `字符串` `回溯` 
 
@@ -3372,12 +3566,12 @@ iterator.hasNext(); // 返回 false
 解释：每个子集的全部异或总和值之和为 480 。
 
 ```
- 
+
 
  **提示：** 
 -  `1 <= nums.length <= 12` 
 -  `1 <= nums[i] <= 20` 
- 
+
 **标签**
 `位运算` `数组` `数学` `回溯` `组合数学` 
 
@@ -3421,7 +3615,7 @@ iterator.hasNext(); // 返回 false
 解释：任意学生与导师配对的兼容性评分都是 0 。
 
 ```
- 
+
 
  **提示：** 
 -  `m == students.length == mentors.length` 
@@ -3429,7 +3623,7 @@ iterator.hasNext(); // 返回 false
 -  `1 <= m, n <= 8` 
 -  `students[i][k]` 为 `0` 或 `1` 
 -  `mentors[j][k]` 为 `0` 或 `1` 
- 
+
 **标签**
 `位运算` `数组` `动态规划` `回溯` `状态压缩` 
 
@@ -3472,7 +3666,7 @@ iterator.hasNext(); // 返回 false
 输出："101"
 解释："101" 没有出现在 nums 中。"000"、"010"、"100"、"110" 也是正确答案。
 ```
- 
+
 
  **提示：** 
 -  `n == nums.length` 
@@ -3480,7 +3674,7 @@ iterator.hasNext(); // 返回 false
 -  `nums[i].length == n` 
 -  `nums[i]` 为 `'0'` 或 `'1'` 
 -  `nums` 中的所有字符串 **互不相同** 
- 
+
 **标签**
 `数组` `字符串` `回溯` 
 
@@ -3533,14 +3727,14 @@ iterator.hasNext(); // 返回 false
 解释：你可以在一个工作时间段以内完成所有任务。
 
 ```
- 
+
 
  **提示：** 
 -  `n == tasks.length` 
 -  `1 <= n <= 14` 
 -  `1 <= tasks[i] <= 10` 
 -  `max(tasks[i]) <= sessionTime <= 15` 
- 
+
 **标签**
 `位运算` `数组` `动态规划` `回溯` `状态压缩` 
 
@@ -3590,12 +3784,12 @@ iterator.hasNext(); // 返回 false
 它们的乘积为 5 * 5 = 25 。
 
 ```
- 
+
 
  **提示：** 
 -  `2 <= s.length <= 12` 
 -  `s` 只含有小写英文字母。
- 
+
 **标签**
 `位运算` `字符串` `动态规划` `回溯` `状态压缩` 
 
@@ -3657,14 +3851,14 @@ iterator.hasNext(); // 返回 false
 解释：在 "bbabbabbbbabaababab" 中重复 3 次的最长子序列是 "bbbb" 。
 
 ```
- 
+
 
  **提示：** 
 -  `n == s.length` 
 -  `2 <= k <= 2000` 
 -  `2 <= n < k * 8` 
 -  `s` 由小写英文字母组成
- 
+
 **标签**
 `贪心` `字符串` `回溯` `计数` `枚举` 
 
@@ -3719,12 +3913,12 @@ iterator.hasNext(); // 返回 false
 - [2,5]
 - [2,1,5]
 ```
- 
+
 
  **提示：** 
 -  `1 <= nums.length <= 16` 
 -  `1 <= nums[i] <= 10^5` 
- 
+
 **标签**
 `位运算` `数组` `回溯` 
 
@@ -3781,11 +3975,11 @@ iterator.hasNext(); // 返回 false
 这也是严格大于 3000 的最小数值平衡数。
 
 ```
- 
+
 
  **提示：** 
 -  `0 <= n <= 10^6` 
- 
+
 **标签**
 `数学` `回溯` `枚举` 
 
@@ -3812,7 +4006,7 @@ iterator.hasNext(); // 返回 false
 - 初始时， **不会有两个棋子** 在 **同一个位置 。** 
 - 有可能在一个移动组合中，有棋子不移动。
 - 如果两个棋子 **直接相邻** 且两个棋子下一秒要互相占据对方的位置，可以将它们在同一秒内 **交换位置** 。
- 
+
 
  **示例 1:** 
 
@@ -3880,7 +4074,7 @@ iterator.hasNext(); // 返回 false
 在 288 个移动组合当中，281 个是有效的。
 
 ```
- 
+
 
  **提示：** 
 -  `n == pieces.length` 
@@ -3890,7 +4084,7 @@ iterator.hasNext(); // 返回 false
 - 棋盘上总共最多只有一个后。
 -  `1 <= x<sub>i</sub>, y<sub>i</sub> <= 8` 
 - 每一个 `positions[i]` 互不相同。
- 
+
 **标签**
 `数组` `字符串` `回溯` `模拟` 
 
@@ -3964,7 +4158,7 @@ iterator.hasNext(); // 返回 false
 唯一访问过的节点为 0 ，最大路径价值为 0 。
 
 ```
- 
+
 
  **提示：** 
 -  `n == values.length` 
@@ -3977,7 +4171,7 @@ iterator.hasNext(); // 返回 false
 -  `[u<sub>j</sub>, v<sub>j</sub>]` 所有节点对 **互不相同** 。
 - 每个节点 **至多有四条** 边。
 - 图可能不连通。
- 
+
 **标签**
 `图` `数组` `回溯` 
 
@@ -4053,14 +4247,14 @@ iterator.hasNext(); // 返回 false
 注意，能得到此结论的方法不止一种。
 
 ```
- 
+
 
  **提示：** 
 -  `n == statements.length == statements[i].length` 
 -  `2 <= n <= 15` 
 -  `statements[i][j]` 的值为 `0` 、 `1` 或 `2` 
 -  `statements[i][i] == 2` 
- 
+
 **标签**
 `位运算` `数组` `回溯` `枚举` 
 
