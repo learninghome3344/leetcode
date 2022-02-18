@@ -194,12 +194,14 @@ class Solution:
             if not cur_set:
                 return False
             for c in cur_set:
+                tmp = board[i][j]
                 board[i][j] = c
                 row[i].remove(c)
                 col[j].remove(c)
                 block[i // 3 * 3+ j // 3].remove(c)
                 if dfs(board, dot_pos, row, col, block, start+1):
                     return True
+               	board[i][j] = tmp
                 row[i].add(c)
                 col[j].add(c)
                 block[i // 3 * 3+ j // 3].add(c)
@@ -505,10 +507,39 @@ class Solution:
 **标签**
 `数组` `回溯` 
 
+## solution
 
-##
 ```python
+class Solution:
+    def solveNQueens(self, n: int) -> List[List[str]]:
+        # def dfs(path, path_idx, p):
+        def dfs(path, path_idx):
+            if len(path) == n:
+                res.append(path[:])
+                return
 
+            can_use = [True] * n
+            # 计算前面行选定的皇后，对当前行的限制
+            for i, j in enumerate(path_idx):
+                can_use[j] = False
+                step = len(path) - i
+                if 0 <= j-step < n:
+                    can_use[j-step] = False
+                if 0 <= j+step < n:
+                    can_use[j+step] = False
+
+            for i in range(n):
+                if not can_use[i]:
+                    continue
+                tmp = "." * i + "Q" + "." * (n - i - 1)
+                # print(p, len(path), i, path+[tmp], can_use)
+                # dfs(path + [tmp], path_idx + [i], p+"-")
+                dfs(path + [tmp], path_idx + [i])
+
+        res = []
+        # dfs([], [], "-")
+        dfs([], [])
+        return res
 ```
 >
 # 52.N皇后 II
@@ -544,10 +575,36 @@ class Solution:
 **标签**
 `回溯` 
 
+## solution
 
-##
 ```python
+class Solution:
+    def totalNQueens(self, n: int) -> int:
+        def dfs(path, path_idx):
+            if len(path) == n:
+                self.count += 1
+                return
 
+            can_use = [True] * n
+            # 计算前面行选定的皇后，对当前行的限制
+            for i, j in enumerate(path_idx):
+                can_use[j] = False
+                step = len(path) - i
+                if 0 <= j-step < n:
+                    can_use[j-step] = False
+                if 0 <= j+step < n:
+                    can_use[j+step] = False
+
+            for i in range(n):
+                if not can_use[i]:
+                    continue
+                tmp = "." * i + "Q" + "." * (n - i - 1)
+                # print(p, len(path), i, path+[tmp], can_use)
+                dfs(path + [tmp], path_idx + [i])
+
+        self.count = 0
+        dfs([], [])
+        return self.count
 ```
 >
 # 77.组合
@@ -706,10 +763,36 @@ class Solution:
 **标签**
 `数组` `回溯` `矩阵` 
 
+## solution
 
-##
 ```python
+class Solution:
+    def exist(self, board: List[List[str]], word: str) -> bool:
+        if not board:
+            return False
 
+        def dfs(i, j, idx, visited):
+            if idx == len(word) - 1:
+                self.res = True
+                return
+            visited[i][j] = True
+            for di, dj in directions:
+                x, y = i + di, j + dj
+                if 0 <= x < m and 0 <= y < n and board[x][y] == word[idx + 1] and not visited[x][y]:
+                    dfs(x, y, idx + 1, visited)
+            visited[i][j] = False
+
+        m, n = len(board), len(board[0])
+        directions = [(-1, 0), (1, 0), (0, 1), (0, -1)]
+        visited = [[False] * n for _ in range(m)]
+        self.res = False
+        for i in range(m):
+            for j in range(n):
+                if board[i][j] == word[0]:
+                    dfs(i, j, 0, visited)
+                    if self.res:
+                        break
+        return self.res
 ```
 >
 # 89.格雷编码
@@ -761,10 +844,100 @@ class Solution:
 **标签**
 `位运算` `数学` `回溯` 
 
+## solution1 回溯
 
-##
+- 对上一个元素`res[-1]`，任意改变它的一位数字，改变第`k`位数字的方式是通过`res[-1]`和`1 << i`异或得到，如果未被使用过，则这个异或结果可以作为下一个元素
+- 补充一个python的知识，global，nonlocal
+  - 全局变量`x`想在函数体内使用，在函数体内加一个`global x`
+  - 非全局变量`y`想在函数体内使用，在函数体内加一个`nonlocal y`，本题`res`是定义在类成员函数中的非全局变量，因此想在函数`dfs`内使用，需要加`nonlocal`
+
 ```python
+class Solution:
+    def grayCode(self, n: int) -> List[int]:
+        def dfs(n):
+            nonlocal res, used
+            if len(res) == (1 << n):
+                return True
+            for i in range(n):
+                cur = res[-1] ^ (1 << i)
+                if cur in used:
+                    continue
+                used.add(cur)
+                res.append(cur)
+                if dfs(n):
+                    return True
+                res.pop()
+                used.remove(cur)
 
+        res = [0]
+        used = set(res)
+        dfs(n)
+        return res
+```
+
+## solution2 递推规律
+
+[Gray Code （镜像反射法，图解） - 格雷编码 - 力扣（LeetCode） (leetcode-cn.com)](https://leetcode-cn.com/problems/gray-code/solution/gray-code-jing-xiang-fan-she-fa-by-jyd/)
+
+从`G(n)`到`G(n+1)`，将`G(n)`每个元素前面加上0，合并上`G(n)`反转后每个元素前面加上1
+
+![img](https://pic.leetcode-cn.com/28acf6d5b1fae0fb2dddbedd7ac92ffeee8902cd28233bdfb08b52af411a9bb2-Picture4.png)
+
+```python
+class Solution:
+    def grayCode(self, n: int) -> List[int]:
+        res, head = [0], 1
+        for i in range(n):
+            length = len(res)
+            for j in range(length-1, -1, -1):
+                res.append(head + res[j])
+            head <<= 1
+        return res
+```
+
+## solution3 二进制码生成格雷码
+
+$$
+\begin{align*}
+(n)_{2} &=\underbrace{\ldots}_{记为x} 0 \underbrace{11 \ldots 11}_{k个}
+\end{align*}
+$$
+
+$$
+\begin{align*}
+(n+1)_{2} &=\underbrace{\ldots}_{记为x} 1 \underbrace{00 \ldots 00}_{k个} \\
+\end{align*}
+$$
+
+$$
+G(n)=n \oplus\left\lfloor\frac{n}{2}\right\rfloor \\
+G(n+1)=(n+1) \oplus\left\lfloor\frac{n+1}{2}\right\rfloor
+$$
+
+- $(n)_{2}$和$(n+1)_{2}$是二进制码，`G(n)`和`G(n+1)`是对应的格雷码
+- `n` 和 `n+1` 的区别，把 `n` 加 1 相当于把 `n` 末位连接的 1 全部取反，然后最低位 0 变成 1
+- 证明`G(n)`和`G(n+1)`之间只有一位不同
+
+```
+# 为了方便说明，假设高位的x为三位的0/1，以abc表示。将n拆成三部分看，高位的abc，中间的第k+1位为0，后面的k位都是1
+abc  0  11...11 —— n
+0ab  c  01...11 -- n>>1
+xyz 0^c 10...00 -- G(n)
+
+abc  1  00...00 -- n+1
+0ab  c  10...00 -- (n+1)>>1
+xyz 1^c 10...00 -- G(n+1)
+```
+
+因此`G(n)`和`G(n+1)`之间只有第`k+1`位不同。
+
+```python
+class Solution:
+    def grayCode(self, n: int) -> List[int]:
+        res = []
+        for i in range(1 << n):
+            res.append(i ^ (i >> 1))
+        return res
 ```
 >
 # 90.子集 II
@@ -862,10 +1035,59 @@ class Solution:
 **标签**
 `字符串` `回溯` 
 
+## solution1 拿到回溯结果时判断解是否valid
 
-##
 ```python
+class Solution:
+def restoreIpAddresses1(self, s: str) -> List[str]:
+        def dfs(s, path, start):
+            if len(path) == 4 and start == len(s) and isValid(path):
+                res.append(".".join(path[:]))
+                return
+            for i in range(start, min(start+3, len(s))):
+                dfs(s, path+[s[start:i+1]], i+1)
 
+        def isValid(path):
+            for p in path:
+                if p[0] == "0" and len(p) > 1:
+                    return False
+                if int(p) > 255:
+                    return False
+            return True
+
+        res = []
+        dfs(s, [], 0)
+        return res
+```
+
+
+
+## solution2 在回溯过程中剪枝
+
+```python
+class Solution:
+    # 在回溯过程中剪枝，而不是最后判断valid
+    def restoreIpAddresses(self, s: str) -> List[str]:
+        def dfs(s, path, start):
+            if len(path) == 4 and start == len(s):
+                res.append(".".join(path[:]))
+                return
+            
+            # 四段出来了字符串没用完，或者 字符串用完了四段没出来
+            if len(path) == 4 or start == len(s):
+                return
+            
+            if s[start] == "0":
+                dfs(s, path+[s[start]], start+1)
+            else:
+                for i in range(start, min(start+3, len(s))):
+                    cur = s[start:i+1]
+                    if 0 <= int(cur) <= 255:
+                        dfs(s, path+[cur], i+1)
+
+        res = []
+        dfs(s, [], 0)
+        return res
 ```
 >
 # 95.不同的二叉搜索树 II
