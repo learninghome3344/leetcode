@@ -1120,10 +1120,28 @@ class Solution:
 **标签**
 `树` `二叉搜索树` `动态规划` `回溯` `二叉树` 
 
+## solution 递归
 
-##
 ```python
-
+class Solution:
+    def generateTrees(self, n: int) -> List[TreeNode]:
+        def dfs(start, end):
+            ans = []
+            if start > end:
+                return [None]
+            for i in range(start, end+1):
+                for left_root in dfs(start, i-1):
+                    for right_root in dfs(i+1, end):
+                        root = TreeNode(i)
+                        root.left = left_root
+                        root.right = right_root
+                        ans.append(root)
+            return ans
+        
+        if n < 1:
+            return []
+        res = dfs(1, n)
+        return res
 ```
 >
 # 113.路径总和 II
@@ -1168,13 +1186,28 @@ class Solution:
 **标签**
 `树` `深度优先搜索` `回溯` `二叉树` 
 
+## solution
 
-##
 ```python
+class Solution:
+    def pathSum(self, root: TreeNode, targetSum: int) -> List[List[int]]:
+        def dfs(path, node, cur_sum):
+            if cur_sum == node.val and not node.left and not node.right:
+                res.append(path + [node.val])
+                return
+            if node.left:
+                dfs(path + [node.val], node.left, cur_sum - node.val)
+            if node.right:
+                dfs(path + [node.val], node.right, cur_sum - node.val)
 
+        res = []
+        if not root:
+            return res
+        dfs([], root, targetSum)
+        return res
 ```
 >
-# 126.单词接龙 II
+# 126.单词接龙 II——先做1，1是bfs
 [https://leetcode-cn.com/problems/word-ladder-ii](https://leetcode-cn.com/problems/word-ladder-ii) 
 ## 原题
 按字典 `wordList` 完成从单词 `beginWord` 到单词 `endWord` 转化，一个表示此过程的 **转换序列** 是形式上像 `beginWord -> s<sub>1</sub> -> s<sub>2</sub> -> ... -> s<sub>k</sub>` 这样的单词序列，并满足：
@@ -1259,13 +1292,29 @@ class Solution:
 **标签**
 `字符串` `动态规划` `回溯` 
 
+## solution
 
-##
 ```python
-
+class Solution:
+    def partition(self, s: str) -> List[List[str]]:
+        def dfs(s, path):
+            nonlocal res
+            if not s:
+                res.append(path[:])
+                return
+            for i in range(1, len(s)+1):
+                if is_palindrome(s[:i]):
+                    dfs(s[i:], path + [s[:i]])
+        
+        def is_palindrome(s):
+            return s == s[::-1]
+        
+        res = []
+        dfs(s, [])
+        return res
 ```
 >
-# 140.单词拆分 II
+# 140.单词拆分 II——先做1，1是dp
 [https://leetcode-cn.com/problems/word-break-ii](https://leetcode-cn.com/problems/word-break-ii) 
 ## 原题
 给定一个字符串 `s` 和一个字符串字典<meta charset="UTF-8" /> `wordDict` ，在字符串<meta charset="UTF-8" /> `s` 中增加空格来构建一个句子，使得句子中所有的单词都在词典中。 **以任意顺序** 返回所有这些可能的句子。
@@ -1319,7 +1368,7 @@ class Solution:
 
 ```
 >
-# 212.单词搜索 II
+# 212.单词搜索 II——1+字典树
 [https://leetcode-cn.com/problems/word-search-ii](https://leetcode-cn.com/problems/word-search-ii) 
 ## 原题
 给定一个 `m x n` 二维字符网格 `board` **** 和一个单词（字符串）列表 `words` ， *返回所有二维网格上的单词* 。
@@ -1330,6 +1379,7 @@ class Solution:
 
  **示例 1：** 
 <img alt="" src="https://assets.leetcode.com/uploads/2020/11/07/search1.jpg" />
+
 ```
 
 输入：board = [["o","a","a","n"],["e","t","a","e"],["i","h","k","r"],["i","f","l","v"]], words = ["oath","pea","eat","rain"]
@@ -1368,7 +1418,7 @@ class Solution:
 # 216.组合总和 III
 [https://leetcode-cn.com/problems/combination-sum-iii](https://leetcode-cn.com/problems/combination-sum-iii) 
 ## 原题
-找出所有相加之和为 ***n*** 的 ** *k* ** 个数的组合 ** *。* ** 组合中只允许含有 1 - 9 的正整数，并且每种组合中不存在重复的数字。
+找出所有相加之和为 ***n*** 的 **k ** 个数的组合 *。* 组合中只允许含有 1 - 9 的正整数，并且每种组合中不存在重复的数字。
 
  **说明：** 
 - 所有数字都是正整数。
@@ -1414,14 +1464,55 @@ class Solution:
 [https://leetcode-cn.com/problems/factor-combinations](https://leetcode-cn.com/problems/factor-combinations) 
 ## 原题
 
+整数可以被看作是其因子的乘积。
+
+例如：
+
+```
+8 = 2 x 2 x 2;
+  = 2 x 4.
+```
+
+请实现一个函数，该函数接收一个整数 n 并返回该整数所有的因子组合。
+
+**注意**：
+
+1. 你可以假定 n 为永远为正数。
+2. 因子必须大于 1 并且小于 n。
+
+**示例1：**
+
+```
+输入: 1
+输出: []
+```
+
+**示例 2：**
+
+```
+输入: 37
+输出: 
+```
 
 **标签**
 `数组` `回溯` 
 
+## solution 递归
 
-##
 ```python
+class Solution:
+    def getFactors(self, n: int) -> List[List[int]]:
+        def dfs(n, start):
+            res = []
+            for i in range(start, 1 + int(math.sqrt(n))):
+                if n % i == 0:
+                    res.append([i, n // i])
+                    for x in dfs(n // i, i):
+                        res.append(x + [i])
+            return res
 
+        res = dfs(n, 2)
+        return res
 ```
 >
 # 257.二叉树的所有路径
@@ -1431,9 +1522,9 @@ class Solution:
 
  **叶子节点** 是指没有子节点的节点。
 
-
  **示例 1：** 
 <img alt="" src="https://assets.leetcode.com/uploads/2021/03/12/paths-tree.jpg" style="width: 207px; height: 293px;" />
+
 ```
 
 输入：root = [1,2,3,null,5]
@@ -1457,16 +1548,72 @@ class Solution:
 **标签**
 `树` `深度优先搜索` `字符串` `回溯` `二叉树` 
 
+## solution1 迭代
 
-##
 ```python
+class Solution:
+    def binaryTreePaths(self, root: TreeNode) -> List[str]:
+        if not root:
+            return []
+        queue = collections.deque([(root, str(root.val))])
+        res = []
+        while queue:
+            node, path = queue.popleft()
+            if not node.left and not node.right:
+                res.append(path)
+                continue
+            if node.left:
+                queue.append((node.left, path+"->"+str(node.left.val)))
+            if node.right:
+                queue.append((node.right, path+"->"+str(node.right.val)))
+        return res
+```
 
+## solution2 回溯
+
+```python
+class Solution:
+    def binaryTreePaths(self, root: Optional[TreeNode]) -> List[str]:
+        def dfs(node, path):
+            if not node.left and not node.right:
+                res.append("->".join([str(i) for i in path + [node.val]]))
+                return
+            if node.left:
+                dfs(node.left, path + [node.val])
+            if node.right:
+                dfs(node.right, path + [node.val])
+        
+        res = []
+        dfs(root, [])
+        return res
 ```
 >
 # 267.回文排列 II
 [https://leetcode-cn.com/problems/palindrome-permutation-ii](https://leetcode-cn.com/problems/palindrome-permutation-ii) 
 ## 原题
 
+给定一个字符串`s`，返回其重新排列组合后可能构成的所有回文字符串，并去除重复的组合 。
+
+你可以按**任意顺序**返回答案。如果`s`不能形成任何回文排列时，则返回一个空列表。
+
+**示例1：**
+
+```
+输入: s = "aabb"
+输出: ["abba", "baab"]
+```
+
+**示例2：**
+
+```
+输入: s = "abc"
+输出: []
+```
+
+**提示：**
+
+- `1 <= s.length <= 16`
+- `s` 仅由小写英文字母组成
 
 **标签**
 `哈希表` `字符串` `回溯` 
