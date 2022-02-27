@@ -1,9 +1,13 @@
 #-*-coding:GBK -*-
+import os
+
 
 def merge_all_problem():
     res = ""
+    root = "/Users/bingjian.yan/recent_learning/algorithm_learning/leetcode/markdown_files/spider"
     for i in range(22):
-        f = open("leetcode_cn_{i}.md".format(i=i), 'r', encoding='utf-8')
+        file = os.path.join(root, "leetcode_cn_all_problems/leetcode_cn_{i}.md".format(i=i))
+        f = open(file, 'r', encoding='utf-8')
         lines = "".join(f.readlines())
         res += lines
         f.close()
